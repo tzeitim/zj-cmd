@@ -16,9 +16,9 @@ Set Theme "Catppuccin Mocha"
 
 # Off camera: put the scripts on PATH and start a clean session.
 Hide
-Type "export PATH=$PWD/bin:$PATH PS1='$ '" Enter
+Type "export PATH=$PWD/bin:$PATH ZELLIJ_CONFIG_DIR=$PWD/demo PS1='$ '" Enter
 Type "zellij delete-session --force zj-demo 2>/dev/null; clear" Enter
-Type "zellij --config demo/config.kdl attach --create zj-demo" Enter
+Type "zellij attach --create zj-demo" Enter
 Sleep 3s
 Show
 
@@ -61,7 +61,11 @@ Type "q"
 Sleep 1s
 
 # 4. Alt /: cheat sheet of your keybinds plus zellij's defaults.
-Alt+/
+# VHS cannot send Alt+/ (the GIF shows no keys anyway), so open what Alt+/ opens off camera.
+Hide
+Type "zellij run --floating --close-on-exit --name keybinds -- zj-keybinds; clear" Enter
+Sleep 1s
+Show
 Sleep 3s
 Type "/Alt"
 Enter
