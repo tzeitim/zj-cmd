@@ -24,7 +24,18 @@ git clone https://github.com/tzeitim/zj-cmd.git ~/src/zj-cmd
 ln -s ~/src/zj-cmd/bin/zj-cmd ~/src/zj-cmd/bin/zj-keybinds ~/.local/bin/
 ```
 
-Bind them in your `config.kdl`. This example uses a tmux-like mode, so the keys are prefix `:` and prefix `?`:
+Bind them in your `config.kdl`. This works with any setup: `Alt x` opens the command prompt and `Alt /` the cheat sheet, from every mode except Locked. Neither key is taken by zellij's defaults.
+
+```kdl
+keybinds {
+    shared_except "locked" {
+        bind "Alt x" { Run "zj-cmd" { floating true; close_on_exit true; name "zellij action"; }; SwitchToMode "Normal"; }
+        bind "Alt /" { Run "zj-keybinds" { floating true; close_on_exit true; name "keybinds"; }; SwitchToMode "Normal"; }
+    }
+}
+```
+
+If you use zellij's tmux mode (`Ctrl b`) as a prefix, you can bind them tmux-style instead, as prefix `:` and prefix `?`:
 
 ```kdl
 keybinds {
