@@ -1,5 +1,7 @@
 # zj-cmd
 
+![zj-cmd demo: fuzzy-pick a zellij action, run it, then open the keybinding cheat sheet](demo/demo.gif)
+
 Two small shell scripts that give [zellij](https://zellij.dev) a tmux-style command prompt and a keybinding cheat sheet, each in a floating pane.
 
 Neither keeps its own list of commands or keys. Both read what your zellij install and config provide, so they stay current when zellij adds actions or you change bindings.
@@ -54,7 +56,7 @@ If zellij can't find the scripts, use the absolute path in `Run`. zellij uses th
 - Type to filter the actions. The preview shows the selected action's options.
 - Enter puts the action on an editable line, for example `zellij action rename-tab ` waiting for the name.
 - The floating pane hides itself before running, so `close-pane`, `new-pane` and similar act on the pane you came from.
-- If the action prints anything, such as `query-tab-names` or an error, the output opens in a floating `less`.
+- If the action prints anything, such as `query-tab-names` or an error, the output opens in a floating `less`. Actions that only return the ID of what they created, like `new-pane`, don't open one.
 - `zj-cmd --list` prints the action list without fzf.
 
 **`zj-keybinds`**
@@ -68,6 +70,10 @@ If zellij can't find the scripts, use the absolute path in `Run`. zellij uses th
 - Running a `zj-cmd` action also hides any other floating panes that were open.
 - `zj-keybinds` reads KDL line by line, not with a full parser. It expects one `bind` per line and the 4-space indentation zellij writes. Unusual formatting may show up oddly.
 - Descriptions come straight from `zellij action --help`, mistakes included.
+
+## Demo GIF
+
+Recorded with [VHS](https://github.com/charmbracelet/vhs) in a throwaway session with its own config: `vhs demo/demo.tape`
 
 ## Test
 
