@@ -7,6 +7,6 @@ keybinds {
         bind "Esc" { SwitchToMode "Normal"; }
         bind "Up" "k" { MoveFocus "Up"; SwitchToMode "Normal"; }
         bind "\"" { NewPane "Down"; SwitchToMode "Normal"; }
-        bind "?" { Run "zj-keys" { floating true; close_on_exit true; }; SwitchToMode "Normal"; }
+        bind "?" { Run "zj-keybinds" { floating true; close_on_exit true; }; SwitchToMode "Normal"; }
     }
 }

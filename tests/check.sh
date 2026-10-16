@@ -10,17 +10,17 @@ list=$(bin/zj-cmd --list)
 grep -q $'^new-pane\t' <<< "$list" || fail "zj-cmd --list lacks new-pane"
 grep -q $'^close-pane\tClose the focused pane' <<< "$list" || fail "zj-cmd --list lacks close-pane description"
 
-# zj-keys: fixture config, plus defaults for the tab mode
-out=$(ZJ_KEYS_CONFIG=tests/fixture.kdl ZJ_KEYS_DEFAULT_MODES=tab bin/zj-keys)
+# zj-keybinds: fixture config, plus defaults for the tab mode
+out=$(ZJ_KEYBINDS_CONFIG=tests/fixture.kdl ZJ_KEYBINDS_DEFAULT_MODES=tab bin/zj-keybinds)
 for want in \
     '[tmux clear-defaults=true]' \
     '  "                      NewPane Down' \
     '  Up | k                 MoveFocus Up' \
     '  Esc                    back to Normal' \
-    '  ?                      Run zj-keys (floating)' \
+    '  ?                      Run zj-keybinds (floating)' \
     '  Ctrl g | Ctrl t        (unbound)' \
     '[tab]  (zellij defaults)'; do
-    grep -qxF -- "$want" <<< "$out" || fail "zj-keys missing line: $want"
+    grep -qxF -- "$want" <<< "$out" || fail "zj-keybinds missing line: $want"
 done
 
 echo "ok"

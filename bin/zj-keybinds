@@ -2,13 +2,13 @@
 # Cheat sheet of your zellij keybinds, read from the config zellij itself uses,
 # plus zellij's defaults for the modes you name (they apply unless cleared).
 #
-#   zj-keys                      page the cheat sheet (plain text when piped)
-#   ZJ_KEYS_CONFIG=path          read this config instead of zellij's own
-#   ZJ_KEYS_DEFAULT_MODES="tab scroll"   default-mode sections to append
+#   zj-keybinds                      page the cheat sheet (plain text when piped)
+#   ZJ_KEYBINDS_CONFIG=path          read this config instead of zellij's own
+#   ZJ_KEYBINDS_DEFAULT_MODES="tab scroll"   default-mode sections to append
 set -euo pipefail
 
-CONF="${ZJ_KEYS_CONFIG:-$(zellij setup --check 2>/dev/null | sed -n 's/^\[LOOKING FOR CONFIG FILE FROM\]: "\(.*\)"$/\1/p')}"
-DEFAULT_MODES="${ZJ_KEYS_DEFAULT_MODES-tab scroll}"
+CONF="${ZJ_KEYBINDS_CONFIG:-$(zellij setup --check 2>/dev/null | sed -n 's/^\[LOOKING FOR CONFIG FILE FROM\]: "\(.*\)"$/\1/p')}"
+DEFAULT_MODES="${ZJ_KEYBINDS_DEFAULT_MODES-tab scroll}"
 
 # stdin = a KDL config; $1 = sections to keep ("" = all); $2 = header suffix
 keys() {
