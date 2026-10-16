@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# Cheat sheet of your zellij keybinds, read from the config zellij itself uses,
+# plus zellij's defaults for the modes you name (they apply unless cleared).
+#
+#   zj-keys                      page the cheat sheet (plain text when piped)
+#   ZJ_KEYS_CONFIG=path          read this config instead of zellij's own
+#   ZJ_KEYS_DEFAULT_MODES="tab scroll"   default-mode sections to append
+set -euo pipefail
+
+CONF="${ZJ_KEYS_CONFIG:-$(zellij setup --check 2>/dev/null | sed -n 's/^\[LOOKING FOR CONFIG FILE FROM\]: "\(.*\)"$/\1/p')}"
+DEFAULT_MODES="${ZJ_KEYS_DEFAULT_MODES-tab scroll}"
+
+# stdin = a KDL config; $1 = sections to keep ("" = all); $2 = header suffix
+keys() {
+    awk -v only=" $1 " -v suffix="$2" '
+        /^keybinds/ { in_kb = 1; keep = (only == "  "); next }
+        !in_kb { next }
+        /^}/ { exit }
+        /^    [a-z_]+.*\{/ {
+            sub(/ *\{.*/, ""); gsub(/"/, ""); name = substr($0, 5)
+            keep = (only == "  " || index(only, " " name " "))
+            if (keep) printf "\n[%s]%s\n", name, suffix
+            next
+        }
+        !keep { next }
+        /^ *\/\// { sub(/^ */, ""); printf "  \033[2m%s\033[0m\n", $0; next }
+        /bind / {
+            keys = $0; sub(/^ *(un)?bind */, "", keys); sub(/ *\{.*/, "", keys); sub(/ *\/\/.*/, "", keys); gsub(/\\"/, "\001", keys); gsub(/" "/, " | ", keys); gsub(/"/, "", keys); gsub(/\001/, "\"", keys)
+            act = $0; sub(/^[^{]*\{ */, "", act); sub(/ *\}.*/, "", act); sub(/;? *SwitchToMode "[Nn]ormal";?/, "", act); gsub(/"/, "", act); sub(/; *$/, "", act)
+            if (act == "") act = "back to Normal"
+            if (act ~ /^Run /) { sub(/ *\{.*/, " (floating)", act); sub(/^Run [^ ]*\//, "Run ", act) }
+            if ($0 ~ /^ *unbind/) act = "(unbound)"
+            printf "  %-22s %s\n", keys, act
+        }
+    '
+}
+
+sheet() {
+    if [[ -f "$CONF" ]]; then
+        keys "" "" < "$CONF"
+        # A config with clear-defaults on keybinds already lists everything.
+        grep -q '^keybinds clear-defaults=true' "$CONF" && return
+        [[ -n "$DEFAULT_MODES" ]] && zellij setup --dump-config | keys "$DEFAULT_MODES" "  (zellij defaults)"
+    else
+        printf 'No config at %s, showing zellij defaults.\n' "${CONF:-<unknown>}"
+        zellij setup --dump-config | keys "" ""
+    fi
+}
+
+if [[ -t 1 ]]; then sheet | less -R; else sheet | sed 's/\x1b\[[0-9]*m//g'; fi

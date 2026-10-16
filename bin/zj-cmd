@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# tmux-style command prompt for zellij: fzf over every `zellij action`
+# subcommand your zellij version has, then edit the arguments and run it.
+# Meant to run in a floating pane.
+#
+#   zj-cmd          pick, edit, run
+#   zj-cmd --list   print "<action>\t<description>" and exit
+set -euo pipefail
+
+actions() {
+    zellij action --help | awk '
+        /^SUBCOMMANDS:/ { s = 1; next }
+        !s { next }
+        /^    [a-z]/ { if (n) print n "\t" d; n = $1; d = ""; next }
+        /^ +[^ ]/ && d == "" { d = $0; sub(/^ +/, "", d) }
+        END { print n "\t" d }
+    '
+}
+
+if [[ "${1-}" == "--list" ]]; then actions; exit 0; fi
+command -v fzf >/dev/null || { echo "zj-cmd: fzf not found in PATH" >&2; exit 1; }
+[[ -n "${ZELLIJ-}" ]] || { echo "zj-cmd: run me inside a zellij session" >&2; exit 1; }
+
+pick=$(actions | fzf --delimiter='\t' --prompt='zellij action> ' \
+        --preview='zellij action {1} --help' --preview-window=down,60%,wrap) || exit 0
+
+read -e -r -i "${pick%%$'\t'*} " -p "zellij action " line
+
+# Hide this floating pane first so the action targets the pane you came from.
+zellij action toggle-floating-panes
+out=$(eval "zellij action $line" 2>&1) || true  # failure text is shown below, not swallowed
+if [[ -n "$out" ]]; then
+    f=$(mktemp)
+    printf 'zellij action %s\n\n%s\n' "$line" "$out" > "$f"
+    zellij run --floating --close-on-exit --name "zellij action" -- sh -c 'less "$1"; rm -f "$1"' _ "$f"
+fi
