@@ -28,7 +28,17 @@ read -e -r -i "${pick%%$'\t'*} " -p "zellij action " line
 
 # Hide this floating pane first so the action targets the pane you came from.
 zellij action toggle-floating-panes
-out=$(eval "zellij action $line" 2>&1) || true  # failure text is shown below, not swallowed
+status=0
+out=$(eval "zellij action $line" 2>&1) || status=$?  # failure text is shown below, not swallowed
+
+# Actions whose help says they return the created pane/tab ID (new-pane, new-tab,
+# edit, ...) would otherwise pop up a pane showing just that ID.
+action=${line%% *}
+if [[ $status -eq 0 && "$out" != *$'\n'* ]] \
+    && zellij action "$action" --help 2>/dev/null | grep -qiE 'Returns: (the )?created'; then
+    out=""
+fi
+
 if [[ -n "$out" ]]; then
     f=$(mktemp)
     printf 'zellij action %s\n\n%s\n' "$line" "$out" > "$f"
