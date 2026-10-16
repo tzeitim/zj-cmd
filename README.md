@@ -1,4 +1,4 @@
-# zellij-fzf-tools
+# zj-cmd
 
 Two small shell scripts that give [zellij](https://zellij.dev) a tmux-style command prompt and a keybinding cheat sheet, each in a floating pane.
 
@@ -20,8 +20,8 @@ Neither keeps its own list of commands or keys. Both read what your zellij insta
 Put both scripts on the `PATH` that zellij sees:
 
 ```sh
-git clone <this repo> ~/src/zellij-fzf-tools
-ln -s ~/src/zellij-fzf-tools/bin/zj-cmd ~/src/zellij-fzf-tools/bin/zj-keybinds ~/.local/bin/
+git clone https://github.com/tzeitim/zj-cmd.git ~/src/zj-cmd
+ln -s ~/src/zj-cmd/bin/zj-cmd ~/src/zj-cmd/bin/zj-keybinds ~/.local/bin/
 ```
 
 Bind them in your `config.kdl`. This example uses a tmux-like mode, so the keys are prefix `:` and prefix `?`:
